@@ -1,0 +1,35 @@
+int digitalPin = 7;   // KY-036 digital interface
+int analogPin = A0;   // KY-036 analog interface
+int ledPin = 13;      // Arduino LED pin
+int digitalVal;       // digital readings
+int analogVal;        // analog readings
+const int analogThreshold = 500; // Threshold for analog sensor
+
+void setup() {
+  pinMode(digitalPin, INPUT); 
+  pinMode(analogPin, INPUT);
+  pinMode(ledPin, OUTPUT);      
+  Serial.begin(9600);
+}
+
+void loop() {
+  // Read the digital interface
+  digitalVal = digitalRead(digitalPin); 
+  Serial.print("Digital Reading: ");
+  Serial.println(digitalVal);
+
+  // Read analog interface
+  analogVal = analogRead(analogPin);
+  Serial.print("Analog Reading: ");
+  Serial.println(analogVal);
+
+  // Control LED based on both digital and analog inputs
+  if (digitalVal == HIGH || analogVal > analogThreshold) {
+    digitalWrite(ledPin, HIGH); // Turn ON LED
+  } else {
+    digitalWrite(ledPin, LOW);  // Turn OFF LED
+  }
+
+  Serial.println("----------------------");
+  delay(200); // Slightly increased delay for better readability in Serial Monitor
+}
