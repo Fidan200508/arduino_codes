@@ -1,0 +1,33 @@
+#define REED_SWITCH_PIN 2
+#define RED_PIN 9
+#define GREEN_PIN 10
+#define BLUE_PIN 11
+
+void setup() {
+    pinMode(REED_SWITCH_PIN, INPUT_PULLUP); // Enable internal pull-up resistor
+    pinMode(RED_PIN, OUTPUT);
+    pinMode(GREEN_PIN, OUTPUT);
+    pinMode(BLUE_PIN, OUTPUT);
+    Serial.begin(9600);
+}
+
+void loop() {
+    int reedState = digitalRead(REED_SWITCH_PIN);
+
+    if (reedState == LOW) { // No magnet detected (switch open)
+        Serial.println("No magnet detected!");
+        setColor(255, 0, 0); // Red
+    } else { // Magnet detected (switch closed)
+        Serial.println("Magnet detected.");
+        setColor(0, 0, 255); // Blue
+    }
+
+    delay(100);
+}
+
+// Function to set RGB LED color
+void setColor(int red, int green, int blue) {
+    analogWrite(RED_PIN, red);
+    analogWrite(GREEN_PIN, green);
+    analogWrite(BLUE_PIN, blue);
+}
