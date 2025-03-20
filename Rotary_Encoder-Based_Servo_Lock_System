@@ -1,0 +1,69 @@
+#include <Servo.h>
+
+#define CLK 2    // Rotary encoder Clock pin
+#define DT 3     // Rotary encoder Data pin
+#define SW 4     // Rotary encoder Switch button
+#define LED_PIN_GREEN 7  // Servo motor control pin
+#define LED_PIN_RED 8
+#define SERVO_PIN 9
+
+Servo lockServo;
+int correctCode = 9;  // The correct combination to unlock
+int inputCode = 0;     // User input number
+int lastStateCLK;
+
+void setup() {
+    pinMode(CLK, INPUT);
+    pinMode(DT, INPUT);
+    pinMode(SW, INPUT_PULLUP);  // Internal pull-up resistor
+    pinMode(LED_PIN_GREEN,OUTPUT);
+    pinMode(LED_PIN_RED,OUTPUT);
+    lockServo.attach(SERVO_PIN);
+    lockServo.write(0);  // Start with the lock in a closed position
+
+    Serial.begin(9600);
+    lastStateCLK = digitalRead(CLK);
+}
+
+void loop() {
+    int currentStateCLK = digitalRead(CLK);
+
+    // Detect rotation
+    if (currentStateCLK != lastStateCLK) {
+        if (digitalRead(DT) != currentStateCLK) {
+            inputCode++;  // Increase number
+        } else {
+            inputCode--;  // Decrease number
+        }
+
+        // Ensure inputCode stays within a valid range
+        inputCode = constrain(inputCode, 0, 99);
+
+        Serial.print("Current Code: ");
+        Serial.println(inputCode);
+    }
+
+    lastStateCLK = currentStateCLK;
+
+    // Check if the button is pressed
+    if (digitalRead(SW) == LOW) {
+        Serial.println("Checking Code...");
+        delay(300); // Debounce delay
+
+        if (inputCode == correctCode) {
+            Serial.println("Unlocked!");
+            lockServo.write(90);  // Unlock (move servo)
+            digitalWrite(LED_PIN_GREEN,HIGH);
+            delay(2000);          // Keep unlocked for 2 seconds
+            lockServo.write(0);   // Lock again
+            digitalWrite(LED_PIN_GREEN,LOW);
+            inputCode = 0;        // Reset code
+        } else {
+            Serial.println("Incorrect Code. Try Again.");
+            digitalWrite(LED_PIN_RED,HIGH);
+            delay(2000);
+            digitalWrite(LED_PIN_RED,LOW);
+
+        }
+    }
+}
