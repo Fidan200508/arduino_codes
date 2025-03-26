@@ -1,0 +1,30 @@
+#define flameSensor 12
+#define relay 7       // Controls water pump
+#define buzzer 4      // Alarm
+#define led 8         // Fire indicator LED
+
+void setup() {
+    pinMode(flameSensor, INPUT);
+    pinMode(relay, OUTPUT);
+    pinMode(buzzer, OUTPUT);
+    pinMode(led, OUTPUT);
+    Serial.begin(9600);
+}
+
+void loop() {
+    int fireDetected = digitalRead(flameSensor);
+
+    if (fireDetected == HIGH) {  // Fire detected
+        digitalWrite(led, HIGH);
+        digitalWrite(buzzer, HIGH);
+        digitalWrite(relay, HIGH);  // Turn on water pump
+        Serial.println("🔥 Fire detected! Water pump activated.");
+    } else {
+        digitalWrite(led, LOW);
+        digitalWrite(buzzer, LOW);
+        digitalWrite(relay, LOW);  // Turn off water pump
+        Serial.println("✅ No fire detected.");
+    }
+
+    delay(500);
+}
